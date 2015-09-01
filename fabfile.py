@@ -16,6 +16,8 @@ def provision_server():
     install_debian_packages(['screen', 'unzip'])
     install_elasticsearch()
     install_kibana()
+    install_logstash()
+    put('provision/logstash/', 'logstash/')
 
 
 def restart_server():
@@ -33,7 +35,7 @@ def package_installed(pkg):
 
 def install_java():
     if not package_installed('default-jre'):
-        sudo('apt-get install -y -qq default-jre')
+        sudo('apt-get install -y -qq  openjdk-8-jdk')
 
 
 def install_elasticsearch():
@@ -46,7 +48,7 @@ def install_elasticsearch():
         sudo('apt-get update -qq -y > /dev/null')
         sudo('dpkg -i elasticsearch-2.0.0-beta1.deb')
         sudo ('apt-get -fy install')
-#       put('provision/elasticsearch.yml', '/etc/elasticsearch/elasticsearch.yml', use_sudo=True)
+        put('provision/elasticsearch.yml', '/etc/elasticsearch/elasticsearch.yml', use_sudo=True)
         #sudo('/usr/share/elasticsearch/bin/plugin -i elasticsearch/marvel/latest')
         sudo('update-rc.d elasticsearch defaults 95 10')
         sudo('service elasticsearch start')
@@ -54,8 +56,10 @@ def install_elasticsearch():
 
 
 def install_logstash():
-
     if not package_installed('logstash'):
+        sudo('echo "deb http://packages.elasticsearch.org/logstash/1.5/debian stable main" | sudo tee -a /etc/apt/sources.list')
+        sudo('apt-get update -qq -y > /dev/null')
+        run('wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -')
         sudo('apt-get install logstash -yq')
 
 
