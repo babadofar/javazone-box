@@ -18,6 +18,8 @@ def provision_server():
     install_kibana()
     install_logstash()
     put('provision/logstash/', 'logstash/')
+    run('logstash/getProdukter.sh')
+    run('/opt/logstash/bin/logstash agent -f logstash/vinMonopoletCsvFileLogstash.conf')
 
 
 def restart_server():
@@ -76,9 +78,9 @@ def install_kibana():
         run('git clone https://github.com/elastic/kibana.git')
         run('curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.26.1/install.sh | bash')
         with cd('kibana'):
-            run('source /home/vagrant/.bashrc && nvm install "$(cat .node-version)"')
+            run('. ~/.nvm/nvm.sh && nvm install "$(cat .node-version)"')
             run('npm install -g npm@3.2')
-            run('source /home/vagrant/.bashrc && npm install')
+            run('. ~/.nvm/nvm.sh && npm install')
 
 
 def vagrant():
